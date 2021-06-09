@@ -52,6 +52,7 @@ Example LLVM output:
         for (std::vector<int>::iterator it = vec.begin(); it != vec.end(); ++it)
                                                                                 ^
                                                                                 {
+                                                                                    
 Example execution
 
 .. code-block:: console
