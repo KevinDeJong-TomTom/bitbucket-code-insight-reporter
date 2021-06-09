@@ -101,10 +101,3 @@ Usage
 
     --report-file FILENAME    Code Insights Report identifier  [required]
     --help                    Show this message and exit.
-
-Credits
--------
-
-- The `atlassian-python-api`_ project, providing the Jira REST API calls used by this project.
-
-.. _atlassian-python-api: https://pypi.org/project/atlassian-python-api/

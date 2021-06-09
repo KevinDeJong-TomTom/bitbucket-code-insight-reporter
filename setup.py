@@ -41,7 +41,6 @@ setup(
     install_requires=(
         'Click>=7,<8',
         'llvm_diagnostics>=0<1',
-        'atlassian-python-api @ https://github.com/atlassian-api/atlassian-python-api/archive/master.tar.gz',
     ),
     entry_points={
         'console_scripts': [

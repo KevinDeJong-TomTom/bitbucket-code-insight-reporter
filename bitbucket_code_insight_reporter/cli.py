@@ -18,7 +18,7 @@ import click
 import json
 import os
 
-from atlassian import Bitbucket
+from . import bitbucket
 from llvm_diagnostics import parser
 
 
@@ -140,14 +140,14 @@ BitBucket Code Insight Reporter
         )
         add_impact_report(_report, "Low", get_count_per_impact(_annotations, "LOW"))
 
-    bitbucket = Bitbucket(
+    bb = bitbucket.Bitbucket(
         url=bitbucket_server,
         username=username,
         password=password,
     )
 
     try:
-        bitbucket.delete_code_insights_report(
+        bb.delete_code_insights_report(
             project_key=bitbucket_project,
             repository_slug=repository_slug,
             commit_id=commit_hash,
@@ -158,6 +158,9 @@ BitBucket Code Insight Reporter
 
     print(
         f"""\
+
+REPORT REPORT REPORT REPORT REP
+-------------------------------
 Project: {bitbucket_project}
 Repository: {repository_slug}
 Commit Hash: {commit_hash}
@@ -165,7 +168,7 @@ Report: {json.dumps(_report, indent=4, sort_keys=True)}"""
     )
 
     try:
-        bitbucket.create_code_insights_report(
+        bb.create_code_insights_report(
             project_key=bitbucket_project,
             repository_slug=repository_slug,
             commit_id=commit_hash,
@@ -180,7 +183,18 @@ Report: {json.dumps(_report, indent=4, sort_keys=True)}"""
     if not _annotations:
         return 0
 
-    bitbucket.add_code_insights_annotations_to_report(
+    print(
+        f"""\
+
+ANNOTATIONS ANNOTATIONS ANNOTAT
+-------------------------------
+Project: {bitbucket_project}
+Repository: {repository_slug}
+Commit Hash: {commit_hash}
+Annotations: {json.dumps(_annotations, indent=4, sort_keys=True)}"""
+    )
+
+    bb.add_code_insights_annotations_to_report(
         project_key=bitbucket_project,
         repository_slug=repository_slug,
         commit_id=commit_hash,
