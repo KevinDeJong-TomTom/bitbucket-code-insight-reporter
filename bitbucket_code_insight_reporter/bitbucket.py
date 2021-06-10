@@ -52,8 +52,9 @@ class Bitbucket:
     def delete_code_insights_report(
         self, project_key, repository_slug, commit_id, report_key
     ):
-        requests.delete(
-            self._report_url(project_key, repository_slug, commit_id, report_key)
+        val = requests.delete(
+            self._report_url(project_key, repository_slug, commit_id, report_key),
+            auth=self._auth,
         )
 
     def create_code_insights_report(

@@ -32,13 +32,18 @@ def get_severity_for_level(level):
     return "LOW"
 
 
-def retrieve_annotations_from_file(path):
+def retrieve_annotations_from_file(path, workspace):
     _annotations = []
     for diag_msg in parser.diagnostics_messages_from_file(path):
         _data = json.loads(diag_msg.to_json())
+        _filepath = (
+            _data["filepath"]
+            if not workspace
+            else _data["filepath"].replace(workspace, "").lstrip(os.path.sep)
+        )
         _annotations.append(
             {
-                "path": _data["filepath"],
+                "path": _filepath,
                 "line": _data["line"],
                 "message": _data["message"],
                 "severity": get_severity_for_level(_data["level"]),
@@ -125,11 +130,11 @@ BitBucket Code Insight Reporter
         print("ERR - Specified input file does not exist!")
         return 1
 
-    _annotations = retrieve_annotations_from_file(llvm_logging)
-
     _report = json.load(report_file)
     _report["data"] = []
     _report_id = _report["id"]
+
+    _annotations = retrieve_annotations_from_file(llvm_logging, _report["workspace"])
     _failure = len(_annotations) > 0
 
     if _failure:

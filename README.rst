@@ -81,6 +81,9 @@ Usage
     --logo-url TEXT    Link towards an image to be shown in the Code Insight
                         report
 
+    --workspace TEXT   Absolute path towards the root of the repository. This
+                        will be stripped from the file paths in the LLVM logging.
+
     --output FILENAME  Path towards the output file  [required]
     --help             Show this message and exit.
 

@@ -46,6 +46,10 @@ import json
     help="Link towards an image to be shown in the Code Insight report",
 )
 @click.option(
+    "--workspace",
+    help="Absolute path towards the root of the repository. This will be stripped from the file paths in the LLVM logging.",
+)
+@click.option(
     "--output",
     required=True,
     type=click.File("w", encoding="UTF-8", lazy=True, atomic=True),
@@ -58,6 +62,7 @@ def main(
     reporter,
     link,
     logo_url,
+    workspace,
     output,
 ):
     print(
@@ -80,6 +85,8 @@ BitBucket Code Insight Generator
         _data["link"] = link
     if logo_url:
         _data["logo-url"] = logo_url
+    if workspace:
+        _data["workspace"] = workspace
 
     print(f"Generating Report: {json.dumps(_data, indent=4, sort_keys=True)}")
 
