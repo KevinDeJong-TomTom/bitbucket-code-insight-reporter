@@ -57,8 +57,8 @@ Example execution
 
 .. code-block:: console
 
-    code_insight_report_generator --id clang_format --title "Clang Format" --details "Overview of all warnings reported by Clang Format" --reporter "Bob Builder" --output ./path/to/report.json
-    code_insight_reporter --bitbucket-server https://bitbucket.url.com --username bob --password builder --llvm-logging ./path/to/logging.out --bitbucket-project BOB --repository-slug builder --commit-hash 1234567890 --report-file ./path/to/report.json
+    code_insight_reporter generate --id clang_format --title "Clang Format" --details "Overview of all warnings reported by Clang Format" --reporter "Bob Builder" --llvm-logging ./path/to/logging.out  --output ./path/to/report.json
+    code_insight_reporter report--bitbucket-server https://bitbucket.url.com --username bob --password builder --bitbucket-project BOB --repository-slug builder --commit-hash 1234567890 --report-file ./path/to/report.json
     
 
 Usage
@@ -66,38 +66,24 @@ Usage
 
 .. code-block:: console
 
-    Usage: code_insight_report_generator [OPTIONS]
+    Usage: code_insight_reporter [OPTIONS] COMMAND [ARGS]...
 
     Options:
-    --id TEXT          Unique identifier for the report  [required]
-    --title TEXT       Humand readable title for the Code Insight report
-                        [required]
+    --verbose  Enable verbose output
+    --help     Show this message and exit.
 
-    --details TEXT     Additional details to share withing the Code Insight
-                        report
-
-    --reporter TEXT    Reference to the reporter of the Code Insight Report
-    --link TEXT        Link towards an external report
-    --logo-url TEXT    Link towards an image to be shown in the Code Insight
-                        report
-
-    --workspace TEXT   Absolute path towards the root of the repository. This
-                        will be stripped from the file paths in the LLVM logging.
-
-    --output FILENAME  Path towards the output file  [required]
-    --help             Show this message and exit.
+    Commands:
+    generate
+    report
 
 .. code-block:: console
 
-    Usage: code_insight_reporter [OPTIONS]
+    Usage: code_insight_reporter report [OPTIONS]
 
     Options:
     --bitbucket-server TEXT   URL for the BitBucket server  [required]
     --username TEXT           Username associated with BitBucket  [required]
     --password TEXT           Password associated with BitBucket  [required]
-    --llvm-logging TEXT       Path pointing to logging file containing llvm
-                                diagnostics messages  [required]
-
     --bitbucket-project TEXT  BitBucket project name  [required]
     --repository-slug TEXT    BitBucket repository slug name  [required]
     --commit-hash TEXT        Commit Hash to associate the Code Insights Report
@@ -105,3 +91,30 @@ Usage
 
     --report-file FILENAME    Code Insights Report identifier  [required]
     --help                    Show this message and exit.
+
+.. code-block:: console
+
+    Usage: code_insight_reporter generate [OPTIONS]
+
+    Options:
+    --id TEXT            Unique identifier for the report  [required]
+    --title TEXT         Humand readable title for the Code Insight report
+                        [required]
+
+    --details TEXT       Additional details to share withing the Code Insight
+                        report
+
+    --reporter TEXT      Reference to the reporter of the Code Insight Report
+    --link TEXT          Link towards an external report
+    --logo-url TEXT      Link towards an image to be shown in the Code Insight
+                        report
+
+    --workspace TEXT     Absolute path towards the root of the repository. This
+                        will be stripped from the file paths in the LLVM
+                        logging.
+
+    --llvm-logging TEXT  Path pointing to logging file containing llvm
+                        diagnostics messages  [required]
+
+    --output FILENAME    Path towards the output file  [required]
+    --help               Show this message and exit.
