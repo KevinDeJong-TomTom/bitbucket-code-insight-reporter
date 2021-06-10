@@ -112,7 +112,7 @@ Report: {json.dumps(_report["report"], indent=4, sort_keys=True)}"""
         print("ERR - Failed to create new Code Insight Report")
         return 1
 
-    _annotations = _report["annotations"]
+    _annotations = _report.get("annotations", None)
     if not _annotations:
         return 0
 
