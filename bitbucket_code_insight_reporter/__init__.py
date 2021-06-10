@@ -13,3 +13,33 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+import click
+import logging
+
+from . import report, generate
+
+
+LOGGER = logging.getLogger(__name__)
+
+
+@click.group()
+@click.option("--verbose", is_flag=True, help="Enable verbose output")
+def main(verbose):
+    logging.basicConfig(
+        level=logging.DEBUG if verbose else logging.INFO,
+        format="%(levelname)s: %(message)s",
+    )
+
+
+for submodule in (
+    report,
+    generate,
+):
+    for subcmd in dir(submodule):
+        if subcmd.startswith("_"):
+            continue
+        cmd = getattr(submodule, subcmd)
+        if not isinstance(cmd, click.Command):
+            continue
+        main.add_command(cmd)

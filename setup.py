@@ -44,8 +44,7 @@ setup(
     ),
     entry_points={
         'console_scripts': [
-            'code_insight_reporter=bitbucket_code_insight_reporter.cli:main',
-            'code_insight_report_generator=bitbucket_code_insight_reporter.generator:main',
+            'code_insight_reporter=bitbucket_code_insight_reporter:main',
         ],
     },
     use_scm_version={"relative_to": __file__},
