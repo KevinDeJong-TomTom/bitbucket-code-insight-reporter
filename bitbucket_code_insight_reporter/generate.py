@@ -40,7 +40,7 @@ def retrieve_annotations_from_file(path, workspace):
         _data = json.loads(diag_msg.to_json())
         _filepath = (
             _data["filepath"]
-            if not workspace
+            if not workspace or workspace not in _data["filepath"]
             else _data["filepath"].replace(workspace, "").lstrip(os.path.sep)
         )
         _annotations.append(
@@ -132,9 +132,7 @@ def generate(
         _report["annotations"] = _annotations
 
     _failure = len(_annotations) > 0
-
-    if _failure:
-        _report["report"]["result"] = "FAIL"
+    _report["report"]["result"] = "FAIL" if _failure else "PASS"
 
     LOGGER.debug(f"Generating Report: {json.dumps(_report, indent=4, sort_keys=True)}")
 
