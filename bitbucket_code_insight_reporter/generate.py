@@ -21,6 +21,7 @@ import os
 
 from llvm_diagnostics import parser
 
+ANNOTATION_LIMIT = 1000
 LOGGER = logging.getLogger(__name__)
 
 
@@ -128,7 +129,16 @@ def generate(
         _report["report"]["logo-url"] = logo_url
 
     _annotations = retrieve_annotations_from_file(llvm_logging, workspace)
-    if _annotations:
+    if _annotations and len(_annotations) < ANNOTATION_LIMIT:
+        _report["annotations"] = _annotations
+    else:
+        _warning = f"NOTE: The number of code annotations ({len(_annotations)}) exceeded the limit ({ANNOTATION_LIMIT})!"
+        if details:
+            _report["report"]["details"] += f"{os.linesep}{os.linesep}{_warning}"
+        else:
+            _report["report"]["details"] = _warning
+
+    if _annotations and len(_annotations) < ANNOTATION_LIMIT:
         _report["annotations"] = _annotations
 
     _failure = len(_annotations) > 0

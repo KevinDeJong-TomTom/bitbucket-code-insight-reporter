@@ -52,10 +52,10 @@ class Bitbucket:
     def delete_code_insights_report(
         self, project_key, repository_slug, commit_id, report_key
     ):
-        val = requests.delete(
+        requests.delete(
             self._report_url(project_key, repository_slug, commit_id, report_key),
             auth=self._auth,
-        )
+        ).raise_for_status()
 
     def create_code_insights_report(
         self, project_key, repository_slug, commit_id, report_key, **report
@@ -64,7 +64,7 @@ class Bitbucket:
             self._report_url(project_key, repository_slug, commit_id, report_key),
             json=report,
             auth=self._auth,
-        )
+        ).raise_for_status()
 
     def add_code_insights_annotations_to_report(
         self, project_key, repository_slug, commit_id, report_key, annotations
@@ -73,4 +73,4 @@ class Bitbucket:
             self._annotations_url(project_key, repository_slug, commit_id, report_key),
             json={"annotations": annotations},
             auth=self._auth,
-        )
+        ).raise_for_status()

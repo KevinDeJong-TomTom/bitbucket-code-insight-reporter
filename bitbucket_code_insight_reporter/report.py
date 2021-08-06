@@ -18,6 +18,8 @@ import click
 import json
 import logging
 
+from requests.models import HTTPError
+
 from .bitbucket import Bitbucket
 
 
@@ -108,29 +110,33 @@ Report: {json.dumps(_report["report"], indent=4, sort_keys=True)}"""
             report_title=_report["report"]["title"],
             **_report["report"],
         )
-    except:
-        print("ERR - Failed to create new Code Insight Report")
+    except HTTPError as e:
+        logging.error("Failed to create new Code Insight Report")
+        logging.error(e)
         return 1
 
     _annotations = _report.get("annotations", None)
-    if not _annotations:
-        return 0
+    if _annotations:
+        logging.debug(
+            f"""\
+    Project: {bitbucket_project}
+    Repository: {repository_slug}
+    Commit Hash: {commit_hash}
+    Annotations: {json.dumps(_annotations, indent=4, sort_keys=True)}"""
+        )
 
-    logging.debug(
-        f"""\
-Project: {bitbucket_project}
-Repository: {repository_slug}
-Commit Hash: {commit_hash}
-Annotations: {json.dumps(_annotations, indent=4, sort_keys=True)}"""
-    )
-
-    bitbucket.add_code_insights_annotations_to_report(
-        project_key=bitbucket_project,
-        repository_slug=repository_slug,
-        commit_id=commit_hash,
-        report_key=_report_id,
-        annotations=_annotations,
-    )
+        try:
+            bitbucket.add_code_insights_annotations_to_report(
+                project_key=bitbucket_project,
+                repository_slug=repository_slug,
+                commit_id=commit_hash,
+                report_key=_report_id,
+                annotations=_annotations,
+            )
+        except HTTPError as e:
+            logging.error("Failed to add annotations to the Code Insight Report")
+            logging.error(e)
+            return 1
 
     logging.info("Done...")
 
