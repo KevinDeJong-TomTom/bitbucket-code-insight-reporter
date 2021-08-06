@@ -41,6 +41,7 @@ setup(
     install_requires=(
         'Click>=7,<8',
         'llvm_diagnostics>=0<1',
+        'requests>=2.25.1,<3',
     ),
     entry_points={
         'console_scripts': [
