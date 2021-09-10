@@ -56,6 +56,45 @@ def retrieve_annotations_from_file(path, workspace):
     return _annotations
 
 
+def create_report(
+    id,
+    llvm_logging,
+    workspace,
+    title=None,
+    details=None,
+    reporter=None,
+    link=None,
+    logo_url=None,
+):
+    _report = {"id": id, "report": {}}
+
+    if title:
+        _report["report"]["title"] = title
+    if details:
+        _report["report"]["details"] = details
+    if reporter:
+        _report["report"]["reporter"] = reporter
+    if link:
+        _report["report"]["link"] = link
+    if logo_url:
+        _report["report"]["logoUrl"] = logo_url
+
+    _annotations = retrieve_annotations_from_file(llvm_logging, workspace)
+    if len(_annotations) > ANNOTATION_LIMIT:
+        _warning = f"NOTE: The number of code annotations ({len(_annotations)}) exceeded the limit ({ANNOTATION_LIMIT})!"
+        if details:
+            _report["report"]["details"] += f"{os.linesep}{os.linesep}{_warning}"
+        else:
+            _report["report"]["details"] = _warning
+    elif len(_annotations) > 0 and len(_annotations) < ANNOTATION_LIMIT:
+        _report["annotations"] = _annotations
+
+    _failure = len(_annotations) > 0
+    _report["report"]["result"] = "FAIL" if _failure else "PASS"
+
+    return _report
+
+
 @click.command()
 @click.option(
     "--id",
@@ -115,38 +154,20 @@ def generate(
         LOGGER.error("Specified input file does not exist!")
         return 1
 
-    _report = {"id": id, "report": {}}
-
-    if title:
-        _report["report"]["title"] = title
-    if details:
-        _report["report"]["details"] = details
-    if reporter:
-        _report["report"]["reporter"] = reporter
-    if link:
-        _report["report"]["link"] = link
-    if logo_url:
-        _report["report"]["logo-url"] = logo_url
-
-    _annotations = retrieve_annotations_from_file(llvm_logging, workspace)
-    if _annotations and len(_annotations) < ANNOTATION_LIMIT:
-        _report["annotations"] = _annotations
-    else:
-        _warning = f"NOTE: The number of code annotations ({len(_annotations)}) exceeded the limit ({ANNOTATION_LIMIT})!"
-        if details:
-            _report["report"]["details"] += f"{os.linesep}{os.linesep}{_warning}"
-        else:
-            _report["report"]["details"] = _warning
-
-    if _annotations and len(_annotations) < ANNOTATION_LIMIT:
-        _report["annotations"] = _annotations
-
-    _failure = len(_annotations) > 0
-    _report["report"]["result"] = "FAIL" if _failure else "PASS"
+    _report = create_report(
+        id=id,
+        title=title,
+        details=details,
+        reporter=reporter,
+        link=link,
+        logo_url=logo_url,
+        workspace=workspace,
+        llvm_logging=llvm_logging,
+    )
 
     LOGGER.debug(f"Generating Report: {json.dumps(_report, indent=4, sort_keys=True)}")
 
-    output.write(json.dumps(_report))
+    output.write(json.dumps(_report, indent=2))
     LOGGER.info(f"Done...")
 
     return 0

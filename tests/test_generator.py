@@ -106,3 +106,66 @@ def test_retrieve_annotations_from_file_wrong_workspace():
         generate.retrieve_annotations_from_file(None, "/wrong_workspace/")
         == _expectations
     )
+
+
+def test_validate_no_annotations():
+    llvm_diagnostics.parser.diagnostics_messages_from_file = Mock(return_value=[])
+    data = generate.create_report(
+        id="test_report",
+        workspace=None,
+        llvm_logging="/code/",
+    )
+
+    _expectations = {"id": "test_report", "report": {"result": "PASS"}}
+
+    assert data == _expectations
+
+
+def test_validate_annotations():
+    llvm_diagnostics.parser.diagnostics_messages_from_file = Mock(
+        return_value=[DiagnosticsMessage("/code/first_test.py", 1, 1, "test message")]
+    )
+    data = generate.create_report(
+        id="test_report",
+        workspace=None,
+        llvm_logging="/code/",
+    )
+
+    _expectations = {
+        "id": "test_report",
+        "report": {"result": "FAIL"},
+        "annotations": [
+            {
+                "line": 1,
+                "message": "test message",
+                "path": "/code/first_test.py",
+                "severity": "HIGH",
+            }
+        ],
+    }
+
+    assert data == _expectations
+
+
+def test_validate_too_many_annotations():
+    llvm_diagnostics.parser.diagnostics_messages_from_file = Mock(
+        return_value=[
+            DiagnosticsMessage("/code/first_test.py", 1, 1, "test message")
+            for i in range(1001)
+        ]
+    )
+    data = generate.create_report(
+        id="test_report",
+        workspace=None,
+        llvm_logging="/code/",
+    )
+
+    _expectations = {
+        "id": "test_report",
+        "report": {
+            "details": "NOTE: The number of code annotations (1001) exceeded the limit (1000)!",
+            "result": "FAIL",
+        },
+    }
+
+    assert data == _expectations
